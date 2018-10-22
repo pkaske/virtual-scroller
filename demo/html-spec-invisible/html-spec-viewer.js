@@ -28,44 +28,48 @@ class HTMLSpecViewer extends VirtualScrollerElement {
   constructor() {
     super();
     this.onRangechange = this.onRangechange.bind(this);
+    this._htmlSpec = undefined;
+    this._stream = undefined;
+    this._adding = undefined;
   }
+
   connectedCallback() {
     super.connectedCallback();
-    if (!this._htmlSpec) {
-      const style = document.createElement('style');
-      style.textContent = `
-  :host {
-    /* Bug with position: fixed https://crbug.com/846322 */
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    padding: 8px;
-    height: auto;
-  }`;
-      this.shadowRoot.appendChild(style);
-      if ('rootScroller' in document) {
-        document.rootScroller = this;
-      }
+    if (this._htmlSpec) return;
 
-      this._htmlSpec = new HtmlSpec();
-      this._htmlSpec.head.style.display = 'none';
-      this.appendChild(this._htmlSpec.head);
-
-      this._stream = this._htmlSpec.advance();
-      this.items = [];
-      this.itemSource = HTMLSpecSource.fromArray(this.items);
-      this.createElement = (item) => item;
-      this.updateElement = (item, _, idx) => {
-        if (idx >= this.items.length) {
-          item.textContent = `Loading (index ${idx}, loaded ${
-              this.items.length} / ${this.itemSource.length})`;
-        }
-      };
-      this.addNextChunk();
-      this.addEventListener('rangechange', this.onRangechange);
+    const style = document.createElement('style');
+    style.textContent = `
+:host {
+  /* Bug with position: fixed https://crbug.com/846322 */
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding: 8px;
+  height: auto;
+}`;
+    this.shadowRoot.appendChild(style);
+    if ('rootScroller' in document) {
+      document.rootScroller = this;
     }
+
+    this._htmlSpec = new HtmlSpec();
+    this._htmlSpec.head.style.display = 'none';
+    this.appendChild(this._htmlSpec.head);
+
+    this._stream = this._htmlSpec.advance();
+    this.items = [];
+    this.itemSource = HTMLSpecSource.fromArray(this.items);
+    this.createElement = (item) => item;
+    this.updateElement = (item, _, idx) => {
+      if (idx >= this.items.length) {
+        item.textContent = `Loading (index ${idx}, loaded ${
+            this.items.length} / ${this.itemSource.length})`;
+      }
+    };
+    this.addNextChunk();
+    this.addEventListener('rangechange', this.onRangechange);
   }
 
   async addNextChunk(chunk = 10) {
