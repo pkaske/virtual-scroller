@@ -27,7 +27,10 @@ class HTMLSpecSource extends ItemSource {
 class HTMLSpecViewer extends VirtualScrollerElement {
   constructor() {
     super();
+
     this.onRangechange = this.onRangechange.bind(this);
+
+    this._items = undefined;
     this._htmlSpec = undefined;
     this._stream = undefined;
     this._adding = undefined;
@@ -59,13 +62,14 @@ class HTMLSpecViewer extends VirtualScrollerElement {
     this.appendChild(this._htmlSpec.head);
 
     this._stream = this._htmlSpec.advance();
-    this.items = [];
-    this.itemSource = HTMLSpecSource.fromArray(this.items);
+
+    this._items = [];
+    this.itemSource = HTMLSpecSource.fromArray(this._items);
     this.createElement = (item) => item;
     this.updateElement = (item, _, idx) => {
-      if (idx >= this.items.length) {
+      if (idx >= this._items.length) {
         item.textContent = `Loading (index ${idx}, loaded ${
-            this.items.length} / ${this.itemSource.length})`;
+            this._items.length} / ${this.itemSource.length})`;
       }
     };
     this.addNextChunk();
@@ -84,7 +88,7 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       if (/^(style|link|script)$/.test(el.localName)) {
         this._htmlSpec.head.appendChild(el);
       } else {
-        this.items.push(el);
+        this._items.push(el);
         this.itemsChanged();
         chunk--;
       }
@@ -95,7 +99,7 @@ class HTMLSpecViewer extends VirtualScrollerElement {
     this._adding = false;
     if (chunk > 0) {
       // YOU REACHED THE END OF THE SPEC \o/
-      this.itemSource = this.items;
+      this.itemSource = this._items;
       this.updateElement = null;
       this._stream = null;
       this.removeEventListener('rangechange', this.onRangechange);
@@ -103,7 +107,7 @@ class HTMLSpecViewer extends VirtualScrollerElement {
   }
 
   onRangechange(range) {
-    if (range.last >= this.items.length) {
+    if (range.last >= this._items.length) {
       this.addNextChunk();
     }
   }
