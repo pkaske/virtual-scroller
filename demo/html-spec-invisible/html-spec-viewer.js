@@ -28,7 +28,7 @@ class HTMLSpecViewer extends VirtualScrollerElement {
   constructor() {
     super();
 
-    this.onRangechange = this.onRangechange.bind(this);
+    this._onRangechange = this._onRangechange.bind(this);
 
     this._items = undefined;
     this._htmlSpec = undefined;
@@ -73,7 +73,7 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       }
     };
     this.addNextChunk();
-    this.addEventListener('rangechange', this.onRangechange);
+    this.addEventListener('rangechange', this._onRangechange);
   }
 
   async addNextChunk(chunk = 10) {
@@ -102,11 +102,11 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       this.itemSource = this._items;
       this.updateElement = null;
       this._stream = null;
-      this.removeEventListener('rangechange', this.onRangechange);
+      this.removeEventListener('rangechange', this._onRangechange);
     }
   }
 
-  onRangechange(range) {
+  _onRangechange(range) {
     if (range.last >= this._items.length) {
       this.addNextChunk();
     }
