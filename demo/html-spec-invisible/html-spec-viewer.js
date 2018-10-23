@@ -7,7 +7,7 @@ class HTMLSpecSource extends ItemSource {
     const placeholders = [];
     for (let i = 0; i < 4; i++) {
       const el = document.createElement('div');
-      el.style.lineHeight = '100vh';
+      el.style.lineHeight = '50vh';
       placeholders.push(el);
     }
     const indexToElement = (idx) => idx >= items.length ?
@@ -42,21 +42,9 @@ class HTMLSpecViewer extends VirtualScrollerElement {
 
   connectedCallback() {
     super.connectedCallback();
+
     if (this._htmlSpec) return;
 
-    const style = document.createElement('style');
-    style.textContent = `
-:host {
-  /* Bug with position: fixed https://crbug.com/846322 */
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  padding: 8px;
-  height: auto;
-}`;
-    this.shadowRoot.appendChild(style);
     if ('rootScroller' in document) {
       document.rootScroller = this;
     }
@@ -113,6 +101,17 @@ class HTMLSpecViewer extends VirtualScrollerElement {
     this.itemSource = this._items;
     this.updateElement = null;
     this._stream = null;
+  }
+
+  get invisibleAreaConnected() {
+    return this._invisibleArea.parentNode !== null;
+  }
+  set invisibleAreaConnected(value) {
+    if (value && !this.invisibleAreaConnected) {
+      this.shadowRoot.appendChild(this._invisibleArea);
+    } else if (this.invisibleAreaConnected) {
+      this._invisibleArea.parentNode.removeChild(this._invisibleArea);
+    }
   }
 }
 

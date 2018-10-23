@@ -1,26 +1,108 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
 
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+html, body {
+  margin: 0px;
+  border: none;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#controls {
+  padding: 0.5em;
+  background-color: #eee;
+}
+
+#styleBoundary {
+  display: contents;
+}
+
+#requirements {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#requirements .text {
+  border: 4px solid #f88;
+  padding: 0.25em;
+  background-color: #fcc;
+}
+</style>
+
+</head>
 <body>
 
+<div id="controls">
+  <label>
+    <input type="checkbox" id="invisibleAreaConnected">
+    invisible area connected
+  </label>
+</div>
+
+<div id="styleBoundary"></div>
+<template id="styleBoundaryTemplate">
+  <style>
+  html-spec-viewer {
+    flex: 1;
+    padding: 8px;
+    width: auto;
+    height: auto;
+  }
+  </style>
   <html-spec-viewer></html-spec-viewer>
+</template>
 
-  <p id="requirements">This demo requires
-    <a href="https://www.chromestatus.com/feature/5466425791610880">Streams API: TransformStream</a> support.</p>
+<div id="requirements">
+  <div class="text">
+    This demo requires
+    <a href="https://www.chromestatus.com/feature/5466425791610880">Streams API:
+    TransformStream</a> support.
+  </div>
+</div>
 
+<script type="module">
+(async () => {
+  if (!window.TransformStream) {
+    return;
+  }
 
-  <script type="module">
-    if (window.TransformStream) {
-      document.getElementById('requirements').remove();
-      import('./html-spec-viewer.js');
-    }
-  </script>
+  const requirements = document.getElementById('requirements');
+  requirements.style.display = 'none';
+
+  await import('./html-spec-viewer.js');
+
+  const styleBoundary = document.getElementById('styleBoundary');
+  const styleBoundaryShadowRoot = styleBoundary.attachShadow({mode: 'open'});
+  styleBoundaryShadowRoot.appendChild(
+      document.getElementById('styleBoundaryTemplate').content.cloneNode(true));
+
+  const specViewer = styleBoundaryShadowRoot.querySelector('html-spec-viewer');
+  const invisibleCheckbox = document.getElementById('invisibleAreaConnected');
+  invisibleCheckbox.checked = specViewer.invisibleAreaConnected;
+  invisibleCheckbox.addEventListener('change', e => {
+    specViewer.invisibleAreaConnected = invisibleCheckbox.checked;
+  });
+})();
+</script>
+
 </body>
-
 </html>
