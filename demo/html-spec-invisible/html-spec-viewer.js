@@ -17,23 +17,27 @@ class HTMLSpecSource extends ItemSource {
     return new this({
       // The number of nodes that we'll load dynamically
       // as the user scrolls.
-      getLength: () => Math.max(items.length, 9312),
+      getLength: () => Math.max(items.length, 9969),
       item: indexToElement,
       key: indexToElement,
     });
   }
 }
 
+const isHeaderElement = (() => {
+  const localNames = new Set(['link', 'script', 'style']);
+  return element => localNames.has(element.localName);
+})();
+
 class HTMLSpecViewer extends VirtualScrollerElement {
   constructor() {
     super();
-
-    this._onRangechange = this._onRangechange.bind(this);
 
     this._items = undefined;
     this._htmlSpec = undefined;
     this._stream = undefined;
     this._adding = undefined;
+    this._invisibleArea = undefined;
   }
 
   connectedCallback() {
@@ -57,6 +61,10 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       document.rootScroller = this;
     }
 
+    this._invisibleArea = document.createElement('div');
+    this._invisibleArea.setAttribute('invisible', '');
+    this.shadowRoot.appendChild(this._invisibleArea);
+
     this._htmlSpec = new HtmlSpec();
     this._htmlSpec.head.style.display = 'none';
     this.appendChild(this._htmlSpec.head);
@@ -72,44 +80,39 @@ class HTMLSpecViewer extends VirtualScrollerElement {
             this._items.length} / ${this.itemSource.length})`;
       }
     };
-    this.addNextChunk();
-    this.addEventListener('rangechange', this._onRangechange);
+    this.recycleElement = (item) => {
+      if (!isHeaderElement(item)) {
+        this._invisibleArea.appendChild(item);
+      }
+    };
+
+    this._load();
   }
 
-  async addNextChunk(chunk = 10) {
-    if (this._adding) {
-      return;
-    }
-    this._adding = true;
+  async _load() {
+    let lastYield = performance.now();
+    for await (const element of iterateStream(this._stream)) {
 
-    await new Promise(resolve => requestIdleCallback(resolve));
-
-    for await (const el of iterateStream(this._stream)) {
-      if (/^(style|link|script)$/.test(el.localName)) {
-        this._htmlSpec.head.appendChild(el);
+      if (isHeaderElement(element)) {
+        this._htmlSpec.head.appendChild(element);
       } else {
-        this._items.push(el);
-        this.itemsChanged();
-        chunk--;
+        this._items.push(element);
+        this._invisibleArea.appendChild(element);
       }
-      if (chunk === 0) {
-        break;
-      }
-    }
-    this._adding = false;
-    if (chunk > 0) {
-      // YOU REACHED THE END OF THE SPEC \o/
-      this.itemSource = this._items;
-      this.updateElement = null;
-      this._stream = null;
-      this.removeEventListener('rangechange', this._onRangechange);
-    }
-  }
 
-  _onRangechange(range) {
-    if (range.last >= this._items.length) {
-      this.addNextChunk();
+      // Spend 2ms per frame appending items to the list, then call
+      // `#itemsChanged` and wait for a new idle period.
+      if (performance.now() - lastYield > 2) {
+        this.itemsChanged();
+        await new Promise(resolve => requestIdleCallback(resolve));
+        lastYield = performance.now();
+      }
     }
+    this.itemsChanged();
+
+    this.itemSource = this._items;
+    this.updateElement = null;
+    this._stream = null;
   }
 }
 
