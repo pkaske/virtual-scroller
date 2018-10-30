@@ -20,11 +20,6 @@ body {
   flex-direction: column;
 }
 
-#controls {
-  padding: 0.5em;
-  background-color: #eee;
-}
-
 #styleBoundary {
   display: contents;
 }
@@ -50,13 +45,6 @@ body {
 
 </head>
 <body>
-
-<div id="controls">
-  <label>
-    <input type="checkbox" id="invisibleAreaConnected">
-    invisible area connected
-  </label>
-</div>
 
 <div id="styleBoundary"></div>
 <template id="styleBoundaryTemplate">
@@ -94,13 +82,6 @@ body {
   const styleBoundaryShadowRoot = styleBoundary.attachShadow({mode: 'open'});
   styleBoundaryShadowRoot.appendChild(
       document.getElementById('styleBoundaryTemplate').content.cloneNode(true));
-
-  const specViewer = styleBoundaryShadowRoot.querySelector('html-spec-viewer');
-  const invisibleCheckbox = document.getElementById('invisibleAreaConnected');
-  invisibleCheckbox.checked = specViewer.invisibleAreaConnected;
-  invisibleCheckbox.addEventListener('change', e => {
-    specViewer.invisibleAreaConnected = invisibleCheckbox.checked;
-  });
 })();
 </script>
 

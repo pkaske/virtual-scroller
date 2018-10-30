@@ -37,7 +37,6 @@ class HTMLSpecViewer extends VirtualScrollerElement {
     this._htmlSpec = undefined;
     this._stream = undefined;
     this._adding = undefined;
-    this._invisibleArea = undefined;
   }
 
   connectedCallback() {
@@ -49,10 +48,6 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       document.rootScroller = this;
     }
 
-    this._invisibleArea = document.createElement('div');
-    this._invisibleArea.setAttribute('invisible', '');
-    this.shadowRoot.appendChild(this._invisibleArea);
-
     this._htmlSpec = new HtmlSpec();
     this._htmlSpec.head.style.display = 'none';
     this.appendChild(this._htmlSpec.head);
@@ -61,7 +56,10 @@ class HTMLSpecViewer extends VirtualScrollerElement {
 
     this._items = [];
     this.itemSource = HTMLSpecSource.fromArray(this._items);
-    this.createElement = (item) => item;
+    this.createElement = (item) => {
+      item.removeAttribute('invisible');
+      return item;
+    };
     this.updateElement = (item, _, idx) => {
       if (idx >= this._items.length) {
         item.textContent = `Loading (index ${idx}, loaded ${
@@ -69,9 +67,7 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       }
     };
     this.recycleElement = (item) => {
-      if (!isHeaderElement(item)) {
-        this._invisibleArea.appendChild(item);
-      }
+      item.setAttribute('invisible', '');
     };
 
     this._load();
@@ -80,12 +76,13 @@ class HTMLSpecViewer extends VirtualScrollerElement {
   async _load() {
     let lastYield = performance.now();
     for await (const element of iterateStream(this._stream)) {
+      element.setAttribute('invisible', '');
 
       if (isHeaderElement(element)) {
         this._htmlSpec.head.appendChild(element);
       } else {
         this._items.push(element);
-        this._invisibleArea.appendChild(element);
+        this.appendChild(element);
       }
 
       // Spend 2ms per frame appending items to the list, then call
@@ -101,17 +98,6 @@ class HTMLSpecViewer extends VirtualScrollerElement {
     this.itemSource = this._items;
     this.updateElement = null;
     this._stream = null;
-  }
-
-  get invisibleAreaConnected() {
-    return this._invisibleArea.parentNode !== null;
-  }
-  set invisibleAreaConnected(value) {
-    if (value && !this.invisibleAreaConnected) {
-      this.shadowRoot.appendChild(this._invisibleArea);
-    } else if (this.invisibleAreaConnected) {
-      this._invisibleArea.parentNode.removeChild(this._invisibleArea);
-    }
   }
 }
 
