@@ -53,7 +53,7 @@ body {
 
 <div id="controls">
   <input id="searchText">
-  <button id="searchButton">&orarr;</button>
+  <button id="searchButton">search</button>
   <button id="searchPreviousButton">&uarr;</button>
   <button id="searchNextButton">&darr;</button>
   <span id="searchInfoText"></span>
@@ -109,7 +109,7 @@ import {ElementTextSearch} from './ElementTextSearch.js';
 
   function gotoAnchor(hash) {
     const item = specViewer.querySelector(hash);
-    if (item) {
+    if (item instanceof Node) {
       dispatchActivateinvisible(item);
     }
   }
@@ -120,8 +120,6 @@ import {ElementTextSearch} from './ElementTextSearch.js';
 
     const documentLocation = new URL(window.location.href);
     const targetLocation = new URL(target.href, target.baseURI);
-    console.log('documentLocation', documentLocation);
-    console.log('targetLocation', targetLocation);
 
     if (documentLocation.origin === targetLocation.origin &&
         documentLocation.path === targetLocation.path &&
@@ -148,32 +146,41 @@ import {ElementTextSearch} from './ElementTextSearch.js';
     textNormalizer: x => x.toLowerCase(),
   });
 
-  let searchResults = undefined;
-  let searchIndex = undefined;
-
   const searchText = document.getElementById('searchText');
   const searchButton = document.getElementById('searchButton');
   const searchPreviousButton = document.getElementById('searchPreviousButton');
   const searchNextButton = document.getElementById('searchNextButton');
   const searchInfoText = document.getElementById('searchInfoText');
 
+  let searchResults = undefined;
+  let searchIndex = undefined;
+
   function search(query = '') {
     if (query === '') {
       searchResults = undefined;
       searchIndex = undefined;
       searchInfoText.textContent = '';
-    } else {
-      searchResults = Array.from(searchController.search(query));
-      searchIndex = 0;
-      searchInfoText.textContent = `${searchResults.length === 0 ? 0 : searchIndex + 1} / ${searchResults.length}`;
-      dispatchActivateinvisible(searchResults[searchIndex]);
+      return;
     }
+
+    const newResults = Array.from(searchController.search(query));
+    if (newResults.length === 0) {
+      searchResults = undefined;
+      searchIndex = undefined;
+      searchInfoText.textContent = '0 / 0';
+      return;
+    }
+
+    searchResults = newResults;
+    searchIndex = 0;
+    searchInfoText.textContent = `${searchResults.length === 0 ? 0 : searchIndex + 1} / ${searchResults.length}`;
+    dispatchActivateinvisible(searchResults[searchIndex]);
   }
 
   function moveRelative(n) {
     if (searchResults !== undefined) {
       searchIndex = (searchIndex + n + searchResults.length) % searchResults.length;
-      searchInfoText.textContent = `${searchIndex + 1} / ${searchResults.length}`;
+      searchInfoText.textContent = `${searchResults.length === 0 ? 0 : searchIndex + 1} / ${searchResults.length}`;
       dispatchActivateinvisible(searchResults[searchIndex]);
     }
   }
