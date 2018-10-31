@@ -99,6 +99,50 @@ import {ElementTextSearch} from './ElementTextSearch.js';
       document.getElementById('styleBoundaryTemplate').content.cloneNode(true));
 
   const specViewer = styleBoundaryShadowRoot.querySelector('html-spec-viewer');
+
+
+  function dispatchActivateinvisible(node) {
+    node.dispatchEvent(new Event('activateinvisible', {bubbles: true}));
+  }
+
+  // Anchor navigation
+
+  function gotoAnchor(hash) {
+    const item = specViewer.querySelector(hash);
+    if (item) {
+      dispatchActivateinvisible(item);
+    }
+  }
+
+  specViewer.addEventListener('click', e => {
+    const target = e.target;
+    if (target.localName !== 'a') return;
+
+    const documentLocation = new URL(window.location.href);
+    const targetLocation = new URL(target.href, target.baseURI);
+    console.log('documentLocation', documentLocation);
+    console.log('targetLocation', targetLocation);
+
+    if (documentLocation.origin === targetLocation.origin &&
+        documentLocation.path === targetLocation.path &&
+        targetLocation.hash.length > 1) {
+      const item = specViewer.querySelector(targetLocation.hash);
+      if (item) {
+        window.history.pushState({hash: targetLocation.hash}, "", targetLocation.hash);
+        e.preventDefault();
+        dispatchActivateinvisible(item);
+      }
+    }
+  }, {capture: true});
+
+  window.addEventListener('popstate', e => {
+    if (e.state && e.state.hash) {
+      gotoAnchor(e.state.hash);
+    }
+  });
+
+  // Search
+
   const searchController = new ElementTextSearch({
     root: specViewer,
     textNormalizer: x => x.toLowerCase(),
@@ -112,10 +156,6 @@ import {ElementTextSearch} from './ElementTextSearch.js';
   const searchPreviousButton = document.getElementById('searchPreviousButton');
   const searchNextButton = document.getElementById('searchNextButton');
   const searchInfoText = document.getElementById('searchInfoText');
-
-  function dispatchActivateinvisible(node) {
-    node.dispatchEvent(new Event('activateinvisible', {bubbles: true}));
-  }
 
   function search(query = '') {
     if (query === '') {
