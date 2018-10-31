@@ -113,6 +113,10 @@ import {ElementTextSearch} from './ElementTextSearch.js';
   const searchNextButton = document.getElementById('searchNextButton');
   const searchInfoText = document.getElementById('searchInfoText');
 
+  function dispatchActivateinvisible(node) {
+    node.dispatchEvent(new Event('activateinvisible', {bubbles: true}));
+  }
+
   function search(query = '') {
     if (query === '') {
       searchResults = undefined;
@@ -121,16 +125,16 @@ import {ElementTextSearch} from './ElementTextSearch.js';
     } else {
       searchResults = Array.from(searchController.search(query));
       searchIndex = 0;
-      specViewer.scrollToItem(searchResults[searchIndex]);
       searchInfoText.textContent = `${searchResults.length === 0 ? 0 : searchIndex + 1} / ${searchResults.length}`;
+      dispatchActivateinvisible(searchResults[searchIndex]);
     }
   }
 
   function moveRelative(n) {
     if (searchResults !== undefined) {
       searchIndex = (searchIndex + n + searchResults.length) % searchResults.length;
-      specViewer.scrollToItem(searchResults[searchIndex]);
       searchInfoText.textContent = `${searchIndex + 1} / ${searchResults.length}`;
+      dispatchActivateinvisible(searchResults[searchIndex]);
     }
   }
 

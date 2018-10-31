@@ -70,6 +70,20 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       item.setAttribute('invisible', '');
     };
 
+    this.addEventListener('activateinvisible', e => {
+      let node = e.target;
+      while (node && node.parentNode !== this) {
+        node = node.parentNode;
+      }
+
+      if (node && node.parentNode === this) {
+        const index = this._items.indexOf(node);
+        if (index !== -1) {
+          this.scrollToIndex(index);
+        }
+      }
+    });
+
     this._load();
   }
 
@@ -98,13 +112,6 @@ class HTMLSpecViewer extends VirtualScrollerElement {
     this.itemSource = this._items;
     this.updateElement = null;
     this._stream = null;
-  }
-
-  scrollToItem(item) {
-    const index = this._items.indexOf(item);
-    if (index !== -1) {
-      this.scrollToIndex(index);
-    }
   }
 }
 
