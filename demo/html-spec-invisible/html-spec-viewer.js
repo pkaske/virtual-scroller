@@ -99,6 +99,13 @@ class HTMLSpecViewer extends VirtualScrollerElement {
     this.updateElement = null;
     this._stream = null;
   }
+
+  scrollToItem(item) {
+    const index = this._items.indexOf(item);
+    if (index !== -1) {
+      this.scrollToIndex(index);
+    }
+  }
 }
 
 customElements.define('html-spec-viewer', HTMLSpecViewer);
