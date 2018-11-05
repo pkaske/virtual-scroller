@@ -18,6 +18,9 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
+  margin: 0px !important;
+  padding: 0px !important;
+  max-width: none !important;
 }
 
 #controls {
@@ -25,8 +28,11 @@ body {
   background-color: #eee;
 }
 
-#styleBoundary {
-  display: contents;
+html-spec-viewer {
+  flex: 1;
+  padding: 8px;
+  width: auto;
+  height: auto;
 }
 
 #requirements {
@@ -59,18 +65,7 @@ body {
   <span id="searchInfoText"></span>
 </div>
 
-<div id="styleBoundary"></div>
-<template id="styleBoundaryTemplate">
-  <style>
-  html-spec-viewer {
-    flex: 1;
-    padding: 8px;
-    width: auto;
-    height: auto;
-  }
-  </style>
-  <html-spec-viewer></html-spec-viewer>
-</template>
+<html-spec-viewer></html-spec-viewer>
 
 <div id="requirements">
   <div class="text">
@@ -93,53 +88,13 @@ import {ElementTextSearch} from './ElementTextSearch.js';
 
   await import('./html-spec-viewer.js');
 
-  const styleBoundary = document.getElementById('styleBoundary');
-  const styleBoundaryShadowRoot = styleBoundary.attachShadow({mode: 'open'});
-  styleBoundaryShadowRoot.appendChild(
-      document.getElementById('styleBoundaryTemplate').content.cloneNode(true));
+  const specViewer = document.querySelector('html-spec-viewer');
 
-  const specViewer = styleBoundaryShadowRoot.querySelector('html-spec-viewer');
-
+  // Search
 
   function dispatchActivateinvisible(node) {
     node.dispatchEvent(new Event('activateinvisible', {bubbles: true}));
   }
-
-  // Anchor navigation
-
-  function gotoAnchor(hash) {
-    const item = specViewer.querySelector(hash);
-    if (item instanceof Node) {
-      dispatchActivateinvisible(item);
-    }
-  }
-
-  specViewer.addEventListener('click', e => {
-    const target = e.target;
-    if (target.localName !== 'a') return;
-
-    const documentLocation = new URL(window.location.href);
-    const targetLocation = new URL(target.href, target.baseURI);
-
-    if (documentLocation.origin === targetLocation.origin &&
-        documentLocation.path === targetLocation.path &&
-        targetLocation.hash.length > 1) {
-      const item = specViewer.querySelector(targetLocation.hash);
-      if (item) {
-        window.history.pushState({hash: targetLocation.hash}, "", targetLocation.hash);
-        e.preventDefault();
-        dispatchActivateinvisible(item);
-      }
-    }
-  }, {capture: true});
-
-  window.addEventListener('popstate', e => {
-    if (e.state && e.state.hash) {
-      gotoAnchor(e.state.hash);
-    }
-  });
-
-  // Search
 
   const searchController = new ElementTextSearch({
     root: specViewer,
