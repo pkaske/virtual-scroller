@@ -79,6 +79,7 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       if (node && node.parentNode === this) {
         const index = this._items.indexOf(node);
         if (index !== -1) {
+          e.preventDefault();
           this.scrollToIndex(index);
         }
       }
