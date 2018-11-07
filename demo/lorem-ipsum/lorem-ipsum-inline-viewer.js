@@ -10,8 +10,6 @@ class LoremIpsumInlineViewer extends VirtualScrollerElement {
   connectedCallback() {
     super.connectedCallback();
 
-    if (this._htmlSpec) return;
-
     if ('rootScroller' in document) {
       document.rootScroller = this;
     }
@@ -22,12 +20,7 @@ class LoremIpsumInlineViewer extends VirtualScrollerElement {
       item.removeAttribute('invisible');
       return item;
     };
-    this.updateElement = (item, _, idx) => {
-      if (idx >= this._items.length) {
-        item.textContent = `Loading (index ${idx}, loaded ${
-            this._items.length} / ${this.itemSource.length})`;
-      }
-    };
+    this.updateElement = () => {};
     this.recycleElement = (item) => {
       item.setAttribute('invisible', '');
     };

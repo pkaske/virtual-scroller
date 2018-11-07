@@ -25,12 +25,7 @@ class LoremIpsumViewer extends VirtualScrollerElement {
       item.removeAttribute('invisible');
       return item;
     };
-    this.updateElement = (item, _, idx) => {
-      if (idx >= this._items.length) {
-        item.textContent = `Loading (index ${idx}, loaded ${
-            this._items.length} / ${this.itemSource.length})`;
-      }
-    };
+    this.updateElement = () => {};
     this.recycleElement = (item) => {
       item.setAttribute('invisible', '');
     };
