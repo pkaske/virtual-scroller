@@ -166,6 +166,7 @@ export class VirtualScrollerElement extends HTMLElement {
     if (!this[_scroller]) {
       this[_scroller] =
           new VirtualScroller({container: this, scrollTarget: this});
+      this[_scroller].sizerParent = this.shadowRoot;
     }
     const scroller = this[_scroller];
 

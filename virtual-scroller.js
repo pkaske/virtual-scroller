@@ -53,6 +53,21 @@ export const RepeatsAndScrolls = Superclass => class extends Repeats
     }
   }
 
+  get sizerParent() {
+    return this._sizerParent;
+  }
+  set sizerParent(sizerParent) {
+    if (this._sizer && this._sizerParent) {
+      this._sizer.remove();
+    }
+
+    this._sizerParent = sizerParent;
+
+    if (this._sizer && this._sizerParent) {
+      this._sizerParent.prepend(this._sizer);
+    }
+  }
+
   get container() {
     return super.container;
   }
@@ -94,7 +109,8 @@ export const RepeatsAndScrolls = Superclass => class extends Repeats
       this._containerInlineStyle = newEl.getAttribute('style') || null;
       if (newEl === this._scrollTarget) {
         this._sizer = this._sizer || this._createContainerSizer();
-        this._container.prepend(this._sizer);
+        this._sizerParent = this._sizerParent || this._container;
+        this._sizerParent.prepend(this._sizer);
       }
       this._scheduleUpdateView();
       this._containerRO.observe(newEl);
@@ -169,7 +185,8 @@ export const RepeatsAndScrolls = Superclass => class extends Repeats
       target.addEventListener('scroll', this, {passive: true});
       if (target === this._containerElement) {
         this._sizer = this._sizer || this._createContainerSizer();
-        this._container.prepend(this._sizer);
+        this._sizerParent = this._sizerParent || this._container;
+        this._sizerParent.prepend(this._sizer);
       }
     }
   }
