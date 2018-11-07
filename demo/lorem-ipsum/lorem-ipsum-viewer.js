@@ -5,28 +5,22 @@ class LoremIpsumViewer extends VirtualScrollerElement {
   constructor() {
     super();
 
-    this._items = undefined;
-    this._htmlSpec = undefined;
-    this._stream = undefined;
-    this._adding = undefined;
+    this._items = loremIpsumElements;
   }
 
   connectedCallback() {
     super.connectedCallback();
 
-    if (this._htmlSpec) return;
-
     if ('rootScroller' in document) {
       document.rootScroller = this;
     }
 
-    for (const item of loremIpsumElements) {
+    for (const item of this._items) {
       item.setAttribute('invisible', '');
       this.appendChild(item);
     }
 
-    this._items = loremIpsumElements;
-    this.itemSource = ItemSource.fromArray(loremIpsumElements);
+    this.itemSource = ItemSource.fromArray(this._items);
     this.createElement = (item) => {
       item.removeAttribute('invisible');
       return item;
@@ -50,7 +44,8 @@ class LoremIpsumViewer extends VirtualScrollerElement {
       if (node && node.parentNode === this) {
         const index = this._items.indexOf(node);
         if (index !== -1) {
-          this.scrollToIndex(index);
+          e.preventDefault();
+          window.requestAnimationFrame(() => this.scrollToIndex(index));
         }
       }
     });
