@@ -1,11 +1,11 @@
 import {ItemSource, VirtualScrollerElement} from '../../virtual-scroller-element.js';
-import {loremIpsumElements} from "./lorem-ipsum-elements.js";
+import {loremIpsumElementsHTML} from "./lorem-ipsum-elements.js";
 
 class LoremIpsumViewer extends VirtualScrollerElement {
   constructor() {
     super();
 
-    this._items = loremIpsumElements;
+    this._items = [];
   }
 
   connectedCallback() {
@@ -44,6 +44,33 @@ class LoremIpsumViewer extends VirtualScrollerElement {
         }
       }
     });
+
+    this._load();
+  }
+
+  async _load() {
+    const template = document.createElement('template');
+
+    let lastYield = performance.now();
+    for await (const htmlChunk of loremIpsumElementsHTML) {
+      template.innerHTML = htmlChunk;
+      const element = template.content.firstElementChild;
+      template.innerHTML = '';
+
+      element.setAttribute('invisible', '');
+      element.style.contains = "style layout paint";
+      this._items.push(element);
+      this.appendChild(element);
+
+      // Spend 2ms per frame appending items to the list, then call
+      // `#itemsChanged` and wait for a new idle period.
+      if (performance.now() - lastYield > 4) {
+        this.itemsChanged();
+        await new Promise(resolve => requestIdleCallback(resolve));
+        lastYield = performance.now();
+      }
+    }
+    this.itemsChanged();
   }
 }
 
