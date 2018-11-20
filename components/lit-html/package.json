@@ -1,0 +1,87 @@
+{
+  "_from": "lit-html@latest",
+  "_id": "lit-html@0.13.0",
+  "_inBundle": false,
+  "_integrity": "sha512-p3R2ji/ucNVG5skguy8WufmSYIdMiTTb9ObUVYM2bOuvIXzDnUiePXGwP5BDbKssW1K6fw1Oj/M07FzdPLsTXw==",
+  "_location": "/lit-html",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "lit-html@latest",
+    "name": "lit-html",
+    "escapedName": "lit-html",
+    "rawSpec": "latest",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/lit-html/-/lit-html-0.13.0.tgz",
+  "_shasum": "d05e7fe8ade572432120339c451c614669788adf",
+  "_spec": "lit-html@latest",
+  "_where": "/Users/valdrin/dev/virtual-list/virtual-scroller",
+  "author": {
+    "name": "The Polymer Authors"
+  },
+  "bugs": {
+    "url": "https://github.com/Polymer/lit-html/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "HTML template literals in JavaScript",
+  "devDependencies": {
+    "@types/chai": "^4.1.0",
+    "@types/mocha": "^5.2.0",
+    "@webcomponents/shadycss": "^1.5.2",
+    "@webcomponents/webcomponentsjs": "^2.0.4",
+    "chai": "^4.1.2",
+    "clang-format": "^1.2.4",
+    "mocha": "^5.2.0",
+    "rollup": "^0.64.1",
+    "rollup-plugin-filesize": "^4.0.1",
+    "rollup-plugin-terser": "^1.0.1",
+    "tslint": "^5.11.0",
+    "typedoc": "^0.12.0",
+    "typescript": "^3.1.1",
+    "uglify-es": "^3.3.5",
+    "wct-mocha": "^1.0.0",
+    "web-component-tester": "^6.9.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "/lit-html.js",
+    "/lit-html.js.map",
+    "/lit-html.d.ts",
+    "/lit-html.d.ts.map",
+    "/lib/",
+    "/directives/",
+    "/src/",
+    "!/src/test/"
+  ],
+  "homepage": "https://github.com/Polymer/lit-html#readme",
+  "license": "BSD-3-Clause",
+  "main": "lit-html.js",
+  "module": "lit-html.js",
+  "name": "lit-html",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Polymer/lit-html.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "checksize": "rollup -c ; cat lit-html.bundled.js | gzip -9 | wc -c ; rm lit-html.bundled.js",
+    "format": "clang-format --version; find src test | grep '\\.js$\\|\\.ts$' | xargs clang-format --style=file -i",
+    "gen-docs": "typedoc --readme none --mode modules --excludeNotExported --excludePrivate --exclude **/*_test.ts --out ./docs/api ./src",
+    "lint": "tslint --project ./",
+    "prepare": "npm run build",
+    "quicktest": "wct -l chrome -p --npm",
+    "test": "npm run build && npm run lint && wct --npm"
+  },
+  "typings": "lit-html.d.ts",
+  "version": "0.13.0"
+}

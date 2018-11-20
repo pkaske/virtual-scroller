@@ -1,0 +1,53 @@
+{
+  "_from": "github:valdrinkoshi/virtual-scroller#master",
+  "_id": "virtual-scroller@0.0.1",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/virtual-scroller",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "valdrinkoshi/virtual-scroller#master",
+    "rawSpec": "valdrinkoshi/virtual-scroller#master",
+    "saveSpec": "github:valdrinkoshi/virtual-scroller#master",
+    "fetchSpec": null,
+    "gitCommittish": "master"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "github:valdrinkoshi/virtual-scroller#e5721b52bbf5c48f8f95c525c26b4944604612d8",
+  "_spec": "valdrinkoshi/virtual-scroller#master",
+  "_where": "/Users/valdrin/dev/virtual-list/virtual-scroller",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/valdrinkoshi/virtual-scroller/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "A virtual scroller that optimizes the rendering of DOM according to the visible area and available data.",
+  "devDependencies": {
+    "clang-format": "^1.2",
+    "lit-html": "latest",
+    "preact": "^8.2.6",
+    "streaming-spec": "github:jakearchibald/streaming-html-spec#master"
+  },
+  "directories": {},
+  "flat": true,
+  "homepage": "https://github.com/valdrinkoshi/virtual-scroller#readme",
+  "license": "ISC",
+  "main": "virtual-scroller.js",
+  "module": "virtual-scroller.js",
+  "name": "virtual-scroller",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valdrinkoshi/virtual-scroller.git"
+  },
+  "scripts": {
+    "format": "find . -name '*.js' | grep -v node_modules | xargs clang-format --style=file -i",
+    "gh-pages": "./deploy-to-gh-pages.sh",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.1"
+}
