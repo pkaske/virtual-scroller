@@ -18,10 +18,16 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
+  margin: 0px !important;
+  padding: 0px !important;
+  max-width: none !important;
 }
 
-#styleBoundary {
-  display: contents;
+html-spec-viewer {
+  flex: 1;
+  padding: 8px;
+  width: auto;
+  height: auto;
 }
 
 #requirements {
@@ -46,18 +52,7 @@ body {
 </head>
 <body>
 
-<div id="styleBoundary"></div>
-<template id="styleBoundaryTemplate">
-  <style>
-  html-spec-viewer {
-    flex: 1;
-    padding: 8px;
-    width: auto;
-    height: auto;
-  }
-  </style>
-  <html-spec-viewer></html-spec-viewer>
-</template>
+<html-spec-viewer></html-spec-viewer>
 
 <div id="requirements">
   <div class="text">
@@ -77,11 +72,6 @@ body {
   requirements.style.display = 'none';
 
   await import('./html-spec-viewer.js');
-
-  const styleBoundary = document.getElementById('styleBoundary');
-  const styleBoundaryShadowRoot = styleBoundary.attachShadow({mode: 'open'});
-  styleBoundaryShadowRoot.appendChild(
-      document.getElementById('styleBoundaryTemplate').content.cloneNode(true));
 })();
 </script>
 

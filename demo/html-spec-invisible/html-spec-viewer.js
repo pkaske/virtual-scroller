@@ -70,6 +70,21 @@ class HTMLSpecViewer extends VirtualScrollerElement {
       item.setAttribute('invisible', '');
     };
 
+    this.addEventListener('activateinvisible', e => {
+      let node = e.target;
+      while (node && node.parentNode !== this) {
+        node = node.parentNode;
+      }
+
+      if (node && node.parentNode === this) {
+        const index = this._items.indexOf(node);
+        if (index !== -1) {
+          e.preventDefault();
+          this.scrollToIndex(index);
+        }
+      }
+    });
+
     this._load();
   }
 
