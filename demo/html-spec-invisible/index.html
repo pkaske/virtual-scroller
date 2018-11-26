@@ -23,11 +23,6 @@ body {
   max-width: none !important;
 }
 
-#controls {
-  padding: 0.5em;
-  background-color: #eee;
-}
-
 html-spec-viewer {
   flex: 1;
   padding: 8px;
@@ -57,14 +52,6 @@ html-spec-viewer {
 </head>
 <body>
 
-<div id="controls">
-  <input id="searchText">
-  <button id="searchButton">search</button>
-  <button id="searchPreviousButton">&uarr;</button>
-  <button id="searchNextButton">&darr;</button>
-  <span id="searchInfoText"></span>
-</div>
-
 <html-spec-viewer></html-spec-viewer>
 
 <div id="requirements">
@@ -76,8 +63,6 @@ html-spec-viewer {
 </div>
 
 <script type="module">
-import {ElementTextSearch} from './ElementTextSearch.js';
-
 (async () => {
   if (!window.TransformStream) {
     return;
@@ -87,80 +72,6 @@ import {ElementTextSearch} from './ElementTextSearch.js';
   requirements.style.display = 'none';
 
   await import('./html-spec-viewer.js');
-
-  const specViewer = document.querySelector('html-spec-viewer');
-
-  // Search
-
-  function dispatchActivateinvisible(node) {
-    node.dispatchEvent(new Event('activateinvisible', {bubbles: true}));
-  }
-
-  const searchController = new ElementTextSearch({
-    root: specViewer,
-    textNormalizer: x => x.toLowerCase(),
-  });
-
-  const searchText = document.getElementById('searchText');
-  const searchButton = document.getElementById('searchButton');
-  const searchPreviousButton = document.getElementById('searchPreviousButton');
-  const searchNextButton = document.getElementById('searchNextButton');
-  const searchInfoText = document.getElementById('searchInfoText');
-
-  let searchResults = undefined;
-  let searchIndex = undefined;
-
-  function search(query = '') {
-    if (query === '') {
-      searchResults = undefined;
-      searchIndex = undefined;
-      searchInfoText.textContent = '';
-      return;
-    }
-
-    const newResults = Array.from(searchController.search(query));
-    if (newResults.length === 0) {
-      searchResults = undefined;
-      searchIndex = undefined;
-      searchInfoText.textContent = '0 / 0';
-      return;
-    }
-
-    searchResults = newResults;
-    searchIndex = 0;
-    searchInfoText.textContent = `${searchResults.length === 0 ? 0 : searchIndex + 1} / ${searchResults.length}`;
-    dispatchActivateinvisible(searchResults[searchIndex]);
-  }
-
-  function moveRelative(n) {
-    if (searchResults !== undefined) {
-      searchIndex = (searchIndex + n + searchResults.length) % searchResults.length;
-      searchInfoText.textContent = `${searchResults.length === 0 ? 0 : searchIndex + 1} / ${searchResults.length}`;
-      dispatchActivateinvisible(searchResults[searchIndex]);
-    }
-  }
-
-  searchText.addEventListener('input', e => {
-    search(searchText.value);
-  });
-
-  searchText.addEventListener('keypress', e => {
-    if (e.code === 'Enter') {
-      moveRelative(e.shiftKey ? -1 : 1);
-    }
-  });
-
-  searchButton.addEventListener('click', e => {
-    search(searchText.value);
-  });
-
-  searchPreviousButton.addEventListener('click', e => {
-    moveRelative(-1);
-  });
-
-  searchNextButton.addEventListener('click', e => {
-    moveRelative(1);
-  });
 })();
 </script>
 
