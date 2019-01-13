@@ -1,4 +1,4 @@
-import {directive, NodePart, createMarker} from '../node_modules/lit-html/lit-html.js';
+import {directive, NodePart, createMarker} from '../../lit-html/lit-html.js';
 import {VirtualRepeater} from '../src/VirtualRepeater.js';
 
 export const LitMixin = Superclass => class extends Superclass {
